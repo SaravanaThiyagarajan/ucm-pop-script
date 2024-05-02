@@ -4,16 +4,27 @@ class UCM {
     this.ifrm = document.createElement("iframe");
     this.css =
       ".app-swicther-popup{background:white;border:0;position:fixed;z-index:10000000;}.show {display: block;}.hide {display: none;} iframe {border:none;}";
-  }
 
-  init() {
     if (!this.validateConfiguration()) {
       return;
     }
+
     this.prepareFrame(this.configuration.top, this.configuration.left);
+
     return this;
   }
 
+  init() {
+    this.setPopupConfiguration();
+  }
+  setPopupConfiguration() {
+    let data = {
+      action: "init",
+      config: this.configuration,
+      token: this.configuration.token,
+    };
+    this.ifrm.contentWindow.postMessage({ data }, "*");
+  }
   validateConfiguration() {
     let isvalid = true;
     if (!(this.configuration.top && this.configuration.left)) {
@@ -33,6 +44,7 @@ class UCM {
     const styleEl = document.createElement("style");
     styleEl.append(this.css);
     this.ifrm.setAttribute("src", "https://app-switcher.test/");
+    // this.ifrm.setAttribute("src", "http://127.0.0.1:5173/");
     this.ifrm.setAttribute("allowfullscreen", true);
     this.ifrm.setAttribute("allow", "fullscreen");
     this.ifrm.setAttribute("scrolling", "no");
@@ -60,6 +72,9 @@ class UCM {
   }
 
   handleMessage(action) {
-    this.ifrm.contentWindow.postMessage({ action }, "*");
+    let data = {
+      action: action,
+    };
+    this.ifrm.contentWindow.postMessage({ data }, "*");
   }
 }
